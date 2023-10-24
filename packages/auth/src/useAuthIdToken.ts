@@ -14,7 +14,11 @@
  * limitations under the License.
  *
  */
-import { QueryKey, UseQueryOptions, UseQueryResult } from "react-query";
+import {
+  QueryKey,
+  UseQueryOptions,
+  UseQueryResult,
+} from "@tanstack/react-query";
 import { Auth, AuthError, IdTokenResult } from "firebase/auth";
 import { useSubscription } from "../../utils/src/useSubscription";
 
@@ -23,7 +27,7 @@ export function useAuthIdToken<R = { token: IdTokenResult }>(
   auth: Auth,
   options: Omit<
     UseQueryOptions<{ token: IdTokenResult }, AuthError, R>,
-    "queryFn"
+    "queryFn" | "queryKey"
   > = {}
 ): UseQueryResult<R, AuthError> {
   const subscribeFn = (
@@ -37,8 +41,11 @@ export function useAuthIdToken<R = { token: IdTokenResult }>(
 
   return useSubscription<{ token: IdTokenResult }, AuthError, R>(
     queryKey,
-    "useAuthIdToken",
+    ["useAuthIdToken"],
     subscribeFn,
-    options
+    {
+      queryKey,
+      ...options,
+    }
   );
 }

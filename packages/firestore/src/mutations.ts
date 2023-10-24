@@ -34,7 +34,7 @@ import {
   useMutation,
   UseMutationOptions,
   UseMutationResult,
-} from "react-query";
+} from "@tanstack/react-query";
 
 export function useFirestoreCollectionMutation<T = DocumentData>(
   ref: CollectionReference<T>,
@@ -44,12 +44,12 @@ export function useFirestoreCollectionMutation<T = DocumentData>(
     WithFieldValue<T>
   >
 ): UseMutationResult<DocumentReference<T>, FirestoreError, WithFieldValue<T>> {
-  return useMutation<DocumentReference<T>, FirestoreError, WithFieldValue<T>>(
-    (data) => {
+  return useMutation<DocumentReference<T>, FirestoreError, WithFieldValue<T>>({
+    mutationFn: (data) => {
       return addDoc<T>(ref, data);
     },
-    useMutationOptions
-  );
+    ...useMutationOptions,
+  });
 }
 
 export function useFirestoreDocumentMutation<T = DocumentData>(
@@ -61,23 +61,26 @@ export function useFirestoreDocumentMutation<T = DocumentData>(
     WithFieldValue<T>
   >
 ): UseMutationResult<void, FirestoreError, WithFieldValue<T>> {
-  return useMutation<void, FirestoreError, WithFieldValue<T>>((data) => {
-    if (options) {
-      return setDoc<T>(ref, data, options);
-    }
+  return useMutation<void, FirestoreError, WithFieldValue<T>>({
+    mutationFn: (data) => {
+      if (options) {
+        return setDoc<T>(ref, data, options);
+      }
 
-    return setDoc<T>(ref, data);
-  }, useMutationOptions);
+      return setDoc<T>(ref, data);
+    },
+    ...useMutationOptions,
+  });
 }
 
 export function useFirestoreDocumentDeletion(
   ref: DocumentReference,
   useMutationOptions?: UseMutationOptions<void, FirestoreError, void>
 ): UseMutationResult<void, FirestoreError, void> {
-  return useMutation<void, FirestoreError, void>(
-    () => deleteDoc(ref),
-    useMutationOptions
-  );
+  return useMutation<void, FirestoreError, void>({
+    mutationFn: () => deleteDoc(ref),
+    ...useMutationOptions,
+  });
 }
 
 export function useFirestoreTransaction<T = void>(
@@ -85,16 +88,22 @@ export function useFirestoreTransaction<T = void>(
   updateFunction: (tsx: Transaction) => Promise<T>,
   useMutationOptions?: UseMutationOptions<T, FirestoreError, void>
 ): UseMutationResult<T, FirestoreError, void> {
-  return useMutation<T, FirestoreError, void>(() => {
-    return runTransaction<T>(firestore, updateFunction);
-  }, useMutationOptions);
+  return useMutation<T, FirestoreError, void>({
+    mutationFn: () => {
+      return runTransaction<T>(firestore, updateFunction);
+    },
+    ...useMutationOptions,
+  });
 }
 
 export function useFirestoreWriteBatch(
   batch: WriteBatch,
   useMutationOptions?: UseMutationOptions<void, FirestoreError, void>
 ): UseMutationResult<void, FirestoreError, void> {
-  return useMutation<void, FirestoreError, void>(() => {
-    return batch.commit();
-  }, useMutationOptions);
+  return useMutation<void, FirestoreError, void>({
+    mutationFn: () => {
+      return batch.commit();
+    },
+    ...useMutationOptions,
+  });
 }

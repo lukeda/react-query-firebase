@@ -19,7 +19,7 @@ import {
   Query,
   namedQuery as firestoreNamedQuery,
 } from "firebase/firestore";
-import { NamedQuery } from "./index";
+import { NamedQuery } from "./utils";
 
 const namedQueryCache: { [key: string]: Query } = {};
 

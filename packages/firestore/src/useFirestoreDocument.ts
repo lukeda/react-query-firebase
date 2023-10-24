@@ -14,7 +14,11 @@
  * limitations under the License.
  *
  */
-import { QueryKey, UseQueryOptions, UseQueryResult } from "react-query";
+import {
+  QueryKey,
+  UseQueryOptions,
+  UseQueryResult,
+} from "@tanstack/react-query";
 import {
   DocumentData,
   DocumentReference,
@@ -22,7 +26,7 @@ import {
   onSnapshot,
   FirestoreError,
 } from "firebase/firestore";
-import { getSnapshot, UseFirestoreHookOptions } from "./index";
+import { getSnapshot, UseFirestoreHookOptions } from "./utils";
 import { useSubscription } from "../../utils/src/useSubscription";
 import { useCallback } from "react";
 
@@ -34,7 +38,7 @@ export function useFirestoreDocument<T = DocumentData, R = DocumentSnapshot<T>>(
   options?: UseFirestoreHookOptions,
   useQueryOptions?: Omit<
     UseQueryOptions<DocumentSnapshot<T>, FirestoreError, R>,
-    "queryFn"
+    "queryFn" | "queryKey"
   >
 ): UseQueryResult<R, FirestoreError> {
   const isSubscription = !!options?.subscribe;
@@ -61,6 +65,7 @@ export function useFirestoreDocument<T = DocumentData, R = DocumentSnapshot<T>>(
     subscribeFn,
     {
       ...useQueryOptions,
+      queryKey,
       onlyOnce: !isSubscription,
       fetchFn: async () => getSnapshot(ref, options?.source),
     }

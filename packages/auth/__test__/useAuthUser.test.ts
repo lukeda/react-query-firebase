@@ -1,5 +1,5 @@
 import React from "react";
-import { QueryClient } from "react-query";
+import { QueryClient } from "@tanstack/react-query";
 import { renderHook, act, cleanup } from "@testing-library/react-hooks";
 import { Auth, UserCredential } from "firebase/auth";
 import { genId, init, signIn } from "./helpers";
@@ -42,7 +42,7 @@ describe("Authentication", () => {
       const credential = await signIn(auth);
 
       const { result, waitFor, unmount } = renderHook(
-        () => useAuthUser(hookId, auth),
+        () => useAuthUser([hookId], auth),
         {
           wrapper,
         }
@@ -51,7 +51,7 @@ describe("Authentication", () => {
       await waitFor(() => result.current.isSuccess);
 
       expect(result.current.data).toBeDefined();
-      expect(result.current.data.uid).toBe(credential.user.uid);
+      expect(result.current.data?.uid).toBe(credential.user.uid);
       unmount();
     });
 
@@ -59,7 +59,7 @@ describe("Authentication", () => {
       const hookId = genId();
 
       const { result, waitFor, unmount } = renderHook(
-        () => useAuthUser(hookId, auth),
+        () => useAuthUser([hookId], auth),
         {
           wrapper,
         }
@@ -77,7 +77,7 @@ describe("Authentication", () => {
 
       await waitFor(() => result.current.isSuccess);
 
-      expect(result.current.data.uid).toBe(credential.user.uid);
+      expect(result.current.data?.uid).toBe(credential.user.uid);
 
       // waitForNextUpdate();
       unmount();
@@ -87,7 +87,7 @@ describe("Authentication", () => {
 
       const { result, waitForNextUpdate, unmount } = renderHook(
         () => {
-          const r = useAuthUser(hookId, auth);
+          const r = useAuthUser([hookId], auth);
 
           return r;
         },
@@ -210,7 +210,7 @@ describe("Authentication", () => {
         any
       >(
         ({ id }) =>
-          useAuthUser(id, auth, {
+          useAuthUser([id], auth, {
             onSuccess(user) {
               mock2(user);
               return user;
@@ -306,7 +306,7 @@ describe("Authentication", () => {
 
       expect(result.current.data).toBeDefined();
       // TODO: keep as token? or use accessToken like firebase does
-      expect(result.current.data.token).toBeDefined();
+      expect(result.current.data?.token).toBeDefined();
     });
 
     test("unsubscribes from state changes", async () => {
@@ -315,7 +315,7 @@ describe("Authentication", () => {
 
       const { result, waitFor, unmount } = renderHook(
         () =>
-          useAuthIdToken(hookId, auth, {
+          useAuthIdToken([hookId], auth, {
             onSuccess(user) {
               mock(user);
 
@@ -353,7 +353,7 @@ describe("Authentication", () => {
         any
       >(
         ({ id }) =>
-          useAuthIdToken(id, auth, {
+          useAuthIdToken([id], auth, {
             onSuccess(user) {
               mock(user);
               return user;
@@ -392,8 +392,8 @@ describe("Authentication", () => {
         any
       >(
         ({ id }) =>
-          useAuthIdToken(id, auth, {
-            onSuccess(user) {
+          useAuthIdToken([id], auth, {
+            onSuccess: (user) => {
               mock1(user);
 
               return user;

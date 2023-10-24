@@ -21,14 +21,14 @@ import {
   QueryFunctionContext,
   UseInfiniteQueryOptions,
   UseInfiniteQueryResult,
-} from "react-query";
+} from "@tanstack/react-query";
 import {
   Query,
   DocumentData,
   SnapshotOptions,
   FirestoreError,
 } from "firebase/firestore";
-import { getQuerySnapshot, GetSnapshotSource, WithIdField } from "./index";
+import { getQuerySnapshot, GetSnapshotSource, WithIdField } from "./utils";
 
 export function useFirestoreInfiniteQueryData<
   T = DocumentData,
@@ -79,8 +79,15 @@ export function useFirestoreInfiniteQueryData<
     "queryFn" | "getNextPageParam"
   >
 ): UseInfiniteQueryResult<R, FirestoreError> {
-  return useInfiniteQuery<WithIdField<T, ID>[], FirestoreError, R>({
+  return useInfiniteQuery<
+    WithIdField<T, ID>[],
+    FirestoreError,
+    R,
+    QueryKey,
+    Query<T>
+  >({
     queryKey: useInfiniteQueryOptions?.queryKey ?? key,
+    initialPageParam: initialQuery,
     async queryFn(
       ctx: QueryFunctionContext<QueryKey, Query<T>>
     ): Promise<WithIdField<T, ID>[]> {

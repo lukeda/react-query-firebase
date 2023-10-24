@@ -16,7 +16,11 @@
  */
 
 import { useCallback } from "react";
-import { QueryKey, UseQueryOptions, UseQueryResult } from "react-query";
+import {
+  QueryKey,
+  UseQueryOptions,
+  UseQueryResult,
+} from "@tanstack/react-query";
 import {
   onSnapshot,
   DocumentData,
@@ -30,7 +34,7 @@ import {
   resolveQuery,
   UseFirestoreHookOptions,
   WithIdField,
-} from "./index";
+} from "./utils";
 import { useSubscription } from "../../utils/src/useSubscription";
 
 type NextOrObserver<T, ID> = (
@@ -134,6 +138,6 @@ export function useFirestoreQueryData<
     queryKey,
     ["useFirestoreDocument", queryKey],
     subscribeFn,
-    { ...useQueryOptions, onlyOnce: !isSubscription, fetchFn }
+    { ...useQueryOptions, queryKey, onlyOnce: !isSubscription, fetchFn }
   );
 }
