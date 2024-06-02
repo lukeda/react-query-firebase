@@ -14,7 +14,11 @@
  * limitations under the License.
  *
  */
-import { QueryKey, UseQueryOptions, UseQueryResult } from "react-query";
+import {
+  QueryKey,
+  UseQueryOptions,
+  UseQueryResult,
+} from "@tanstack/react-query";
 import { DatabaseReference, onValue, DataSnapshot } from "firebase/database";
 import { useCallback } from "react";
 import { useSubscription } from "../../utils/src/useSubscription";
@@ -45,6 +49,7 @@ export function useDatabaseSnapshot<R = DataSnapshot>(
     subscribeFn,
     {
       ...useQueryOptions,
+      queryKey,
       onlyOnce: !isSubscription,
       fetchFn: async () => get(ref),
     }
@@ -96,6 +101,7 @@ export function useDatabaseValue<T = unknown | null, R = T>(
     subscribeFn,
     {
       ...useQueryOptions,
+      queryKey,
       onlyOnce: !isSubscription,
       fetchFn: async () =>
         parseDataSnapshot(await get(ref), !!options?.toArray),

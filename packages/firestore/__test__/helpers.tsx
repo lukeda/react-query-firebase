@@ -17,20 +17,9 @@
 
 import * as React from "react";
 import axios from "axios";
-import {
-  QueryClient,
-  QueryClientProvider,
-  setLogger,
-} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { initializeApp } from "firebase/app";
 import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
-
-setLogger({
-  log: console.log,
-  warn: console.warn,
-  // ✅ no more errors on the console
-  error: () => null,
-});
 
 let emulatorsStarted = false;
 
@@ -59,7 +48,7 @@ export function init(): any {
       queries: {
         // ✅ turns retries off
         retry: false,
-        cacheTime: 0,
+        gcTime: 0,
       },
     },
   });

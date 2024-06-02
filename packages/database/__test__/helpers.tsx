@@ -1,5 +1,9 @@
 import React from "react";
-import { QueryClient, QueryClientProvider, setLogger } from "react-query";
+import {
+  QueryClient,
+  QueryClientProvider,
+  setLogger,
+} from "@tanstack/react-query";
 import { initializeApp } from "firebase/app";
 import { connectDatabaseEmulator, getDatabase } from "firebase/database";
 
