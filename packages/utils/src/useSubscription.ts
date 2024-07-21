@@ -89,18 +89,14 @@ export function useSubscription<TData, TError, R = TData>(
     }
   }, []);
 
-  let resolvePromise: (data: TData | null) => void = () => null;
-  let rejectPromise: (err: any) => void = () => null;
+  let resolvePromise: (data: TData | null) => void = (data) => data || null;
+  let rejectPromise: (err: any) => void = (err) => err || null;
   const result: CancellablePromise<TData | null> = new Promise<TData | null>(
     (resolve, reject) => {
       resolvePromise = resolve;
       rejectPromise = reject;
     }
   );
-
-  result.cancel = () => {
-    queryClient.invalidateQueries({ queryKey });
-  };
 
   let unsubscribe: Unsubscribe;
   if (!options?.onlyOnce) {
@@ -134,8 +130,8 @@ export function useSubscription<TData, TError, R = TData>(
     }
   }
 
-  const queryFn: QueryFunction<TData, QueryKey> = () => {
-    return result as Promise<TData>;
+  const queryFn: QueryFunction<TData, QueryKey> = async () => {
+    return (await options?.fetchFn?.()) || (result as Promise<TData>);
   };
 
   return useQuery<TData, TError, R>({
