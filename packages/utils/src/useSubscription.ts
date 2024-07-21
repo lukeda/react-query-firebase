@@ -98,6 +98,10 @@ export function useSubscription<TData, TError, R = TData>(
     }
   );
 
+  result.cancel = () => {
+    queryClient.invalidateQueries({ queryKey });
+  };
+
   let unsubscribe: Unsubscribe;
   if (!options?.onlyOnce) {
     if (unsubscribes[subscriptionHash]) {
